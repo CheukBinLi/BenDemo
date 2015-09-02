@@ -1,6 +1,5 @@
 package com.ben.net.server;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.Callable;
@@ -13,25 +12,18 @@ import com.ben.net.server.util.ByteBufferUtil;
  * @author Ben-P
  *
  */
-public class ReadHadler implements Callable<Object> {
+public class WriterHadler implements Callable<Object> {
 
-	public ReadHadler(SelectionKey key) {
+	public WriterHadler(SelectionKey key) {
 		super();
 		this.key = key;
 	}
 
 	private SelectionKey key;
 	private SocketChannel client;
-
+	
 	public Object call() throws Exception {
-		client = (SocketChannel) key.channel();
-		
-		
-		
-		System.out.println(new String(ByteBufferUtil.instance().getByte(client).toByteArray()));
-		
-		
-		
+		client.write(ByteBufferUtil.instance().getBuffer("你好吗？".getBytes()));
 		client.close();
 		key.cancel();
 		return key.attachment();// 清空

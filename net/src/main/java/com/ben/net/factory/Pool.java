@@ -14,9 +14,12 @@ public class Pool {
 	}
 
 	public static ExecutorService add(Object key, int size) {
+		ExecutorService executorService;
 		if (size > 0)
-			return pool.put(key, Executors.newFixedThreadPool(size));
-		return pool.put(key, Executors.newCachedThreadPool());
+			executorService = Executors.newFixedThreadPool(size);
+		executorService = Executors.newCachedThreadPool();
+		pool.put(key, executorService);
+		return executorService;
 	}
 
 }
