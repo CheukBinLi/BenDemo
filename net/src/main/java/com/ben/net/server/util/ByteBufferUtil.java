@@ -67,6 +67,20 @@ public class ByteBufferUtil {
 		return byteBuffer;
 	}
 
+	public byte[] getBytes(String str) throws IOException {
+		byte[]bytes=str.getBytes();
+		ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length + LENGTH_WAY);
+		String formatChar = "%0" + LENGTH_WAY + "d";
+		byteBuffer.put(String.format(formatChar, bytes.length).getBytes()).put(bytes);
+		return byteBuffer.array();
+	}
+	public byte[] getBytes(byte[] bytes) throws IOException {
+		ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length + LENGTH_WAY);
+		String formatChar = "%0" + LENGTH_WAY + "d";
+		byteBuffer.put(String.format(formatChar, bytes.length).getBytes()).put(bytes);
+		return byteBuffer.array();
+	}
+
 	public static void main(String[] args) {
 		System.out.println(113 / 6);
 		System.out.println(113 % 6);
