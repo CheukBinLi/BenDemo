@@ -1,10 +1,10 @@
 package com.ben.net.server;
 
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -16,20 +16,31 @@ public class QueueManager {
 
 	private static final LinkedList<Object> sequence = new LinkedList<Object>();
 
-	private static final Set<Object> working = new HashSet<Object>();
+	// private static final Set<Object> working = new HashSet<Object>();
+	private static final ConcurrentSkipListSet<Object> working = new ConcurrentSkipListSet<Object>();
 
 	private static final BlockingDeque<Future<Object>> finishWork = new LinkedBlockingDeque<Future<Object>>();
 
-	private static ExecutorService executorService = Pool.add(QueueManager.class.getName() + "Pool", 5);
+	private static ExecutorService executorService;
 
 	// 是否在工作队列,没有则添加到工作队列
 	public static final boolean isWorking(Object id) {
-		return !working.add(getID());
+		// boolean result = !working.add(id);
+		// System.out.println(id+" : "+result+"  con:"+working.contains(id));
+		// return result;
+		return !working.add(id);
 	}
 
 	// 移除工作队列
 	public static final void releaseWorking(Future<Object> id) {
-		finishWork.addLast(id);
+		if (null != id)
+			finishWork.addLast(id);
+	}
+
+	// 移除工作队列
+	public static final void releaseWorking(Object id) {
+		if (null != id)
+			working.remove(id);
 	}
 
 	// 获取ID
@@ -42,15 +53,17 @@ public class QueueManager {
 	}
 
 	public static final void start(int poolSize) {
-		if (null != executorService && !executorService.isShutdown())
-			stop();
+		stop();
 		sequence.clear();
 		executorService.execute(new GenerateID(poolSize));
 		executorService.execute(new finishWork());
+		// executorService.execute(new X());
 	}
 
 	public static final void stop() {
-		executorService.shutdownNow();
+		if (null != executorService && !executorService.isShutdown())
+			executorService.shutdownNow();
+		executorService = Pool.add(QueueManager.class.getName() + "Pool", 5);
 	}
 
 	/***
@@ -69,19 +82,6 @@ public class QueueManager {
 		}
 
 		public void run() {
-			// synchronized (queue) {
-			// try {
-			// while (!Thread.interrupted()) {
-			// if (queue.size() > 0) {
-			// sequence.addAll(queue);
-			// queue.clear();
-			// }
-			// else
-			// queue.wait();
-			// }
-			// } catch (InterruptedException e) {
-			// e.printStackTrace();
-			// }
 			while (!Thread.interrupted()) {
 				try {
 					sequence.add(queue.takeFirst());
@@ -97,7 +97,7 @@ public class QueueManager {
 		 */
 		public static final synchronized void createID() {
 			queue.add(UUID.randomUUID().toString());
-//			queue.notify();
+			// queue.notify();
 		}
 	}
 
@@ -105,10 +105,33 @@ public class QueueManager {
 		public void run() {
 			while (!Thread.interrupted()) {
 				try {
-					working.remove(finishWork.takeFirst().get());
+					Object o = finishWork.takeFirst().get();
+					System.err.println("关闭:" + o);
+					working.remove(o);
+					// working.remove(finishWork.takeFirst().get());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	static class X implements Runnable {
+		public void run() {
+			Iterator<Object> it;
+			while (!Thread.interrupted()) {
+				try {
+					Thread.sleep(10000);
+
+					it = working.iterator();
+					while (it.hasNext()) {
+						System.out.print(it.next() + "  ");
+					}
+					System.out.println();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

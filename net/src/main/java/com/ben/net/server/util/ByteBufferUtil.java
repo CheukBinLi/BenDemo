@@ -3,6 +3,7 @@ package com.ben.net.server.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.ScatteringByteChannel;
 
@@ -21,28 +22,57 @@ public class ByteBufferUtil {
 
 	private static final int LENGTH_WAY = 16;
 
-	public ByteArrayOutputStream getByte(ScatteringByteChannel scatteringByteChannel) throws IOException {
-		ByteBuffer[] buffer = new ByteBuffer[] { ByteBuffer.allocate(1024) };
-		scatteringByteChannel.read(buffer, 0, LENGTH_WAY);
-		byte[] lenByte = new byte[8];
-		buffer[0].get(lenByte);
-		buffer[0].flip();
+	private byte[] get(ScatteringByteChannel scatteringByteChannel, int size) throws IOException {
+		ByteBuffer buffer = ByteBuffer.allocate(size);
+		scatteringByteChannel.read(buffer);
+		buffer.flip();
+		// System.out.println(new String(buffer.array()));
+		return buffer.array();
+	}
+
+	public ByteArrayOutputStream getByte(ScatteringByteChannel scatteringByteChannel) {
+		ByteBuffer buffer = ByteBuffer.allocate(1024);
+		ByteArrayOutputStream out = null;
+		try {
+			// scatteringByteChannel.read(buffer, 0, LENGTH_WAY);
+			// byte[] lenByte = new byte[LENGTH_WAY];
+			byte[] lenByte = get(scatteringByteChannel, LENGTH_WAY);
+			int length = Integer.valueOf(new String(lenByte));
+			out = new ByteArrayOutputStream(length);
+			int count = length / buffer.capacity();
+			int x = length % buffer.capacity();
+			for (int i = 0; i < count; i++) {
+				scatteringByteChannel.read(buffer);
+				buffer.flip();
+				out.write(buffer.array());
+				buffer.clear();
+			}
+			if (x > 0) {
+				out.write(get(scatteringByteChannel, x));
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return out;
+	}
+
+	public ByteArrayOutputStream getByte(InputStream inputStream) throws IOException {
+		byte[] buffer = new byte[512];
+		byte[] lenByte = new byte[LENGTH_WAY];
+		inputStream.read(lenByte);
 		int length = Integer.valueOf(new String(lenByte));
-		buffer[0].clear();
 		ByteArrayOutputStream out = new ByteArrayOutputStream(length);
 		int count = length / buffer.length;
 		int x = length % buffer.length;
 		for (int i = 0; i < count; i++) {
-			scatteringByteChannel.read(buffer);
-			buffer[0].flip();
-			out.write(buffer[0].array());
-			buffer[0].clear();
+			inputStream.read(buffer);
+			out.write(buffer);
 		}
 		if (x > 0) {
 			byte[] temp = new byte[x];
-			scatteringByteChannel.read(buffer, 0, x);
-			buffer[0].flip();
-			buffer[0].get(temp);
+			inputStream.read(buffer, 0, x);
 			out.write(temp);
 		}
 		return out;
@@ -57,6 +87,7 @@ public class ByteBufferUtil {
 		while ((len = in.read(buff)) > 0) {
 			byteBuffer.put(buff, 0, len);
 		}
+		byteBuffer.flip();
 		return byteBuffer;
 	}
 
@@ -64,20 +95,26 @@ public class ByteBufferUtil {
 		ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length + LENGTH_WAY);
 		String formatChar = "%0" + LENGTH_WAY + "d";
 		byteBuffer.put(String.format(formatChar, bytes.length).getBytes()).put(bytes);
+		byteBuffer.flip();
 		return byteBuffer;
 	}
 
 	public byte[] getBytes(String str) throws IOException {
-		byte[]bytes=str.getBytes();
+		byte[] bytes = str.getBytes();
 		ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length + LENGTH_WAY);
 		String formatChar = "%0" + LENGTH_WAY + "d";
 		byteBuffer.put(String.format(formatChar, bytes.length).getBytes()).put(bytes);
+		// System.out.println("byte[] getBytes(String str)" + new String(byteBuffer.array()));
+		byteBuffer.flip();
 		return byteBuffer.array();
 	}
+
 	public byte[] getBytes(byte[] bytes) throws IOException {
 		ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length + LENGTH_WAY);
 		String formatChar = "%0" + LENGTH_WAY + "d";
 		byteBuffer.put(String.format(formatChar, bytes.length).getBytes()).put(bytes);
+		// System.out.println("byte[] getBytes(byte[] bytes)" + new String(byteBuffer.array()));
+		byteBuffer.flip();
 		return byteBuffer.array();
 	}
 
