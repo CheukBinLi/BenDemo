@@ -31,5 +31,10 @@
 			<artifactId>ScanToPackage</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.ben</groupId>
+			<artifactId>net</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>

@@ -10,4 +10,8 @@ public class create1 {
 	class SuperClass {
 	}
 
+	public void A(){
+		System.out.println("A");
+	}
+	
 }

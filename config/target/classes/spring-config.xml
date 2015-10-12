@@ -141,7 +141,8 @@
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="myDataSource" />
 		<!--实体类 -->
-		<property name="packagesToScan" value="com.ben/**">
+		<property name="packagesToScan" value="com/**/CarManager/**">
+<!-- 		<property name="packagesToScan" value="com.ben/**"> -->
 		</property>
 		<property name="hibernateProperties">
 			<props>

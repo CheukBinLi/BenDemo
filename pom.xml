@@ -15,7 +15,7 @@
 	</properties>
 
 	<dependencies>
-		<!-- Hibernate 依赖�? -->
+		<!-- Hibernate 依赖�? -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
@@ -246,6 +246,6 @@
 		<module>DataStructure</module>
 		<module>Sequence</module>
 		<module>CacheDemo</module>
-    <module>net</module>
-  </modules>
+		<module>net</module>
+	</modules>
 </project>

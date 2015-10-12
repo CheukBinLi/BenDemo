@@ -1,5 +1,6 @@
 package com.ben.ScanToPackage.test;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -63,6 +64,12 @@ public class JavassistProxyFactory2 {
 			}
 		}
 		a.put("aaaa", newCtClass.toClass());
+		try {
+			newCtClass.writeFile("C:/Users/hnbh/Desktop");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -78,5 +85,6 @@ public class JavassistProxyFactory2 {
 
 		System.out.println(a1.a3x("sdasdasd", 1));
 
+		System.out.println(Thread.currentThread().getContextClassLoader().getResource(""));
 	}
 }
