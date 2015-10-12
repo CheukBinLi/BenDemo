@@ -1,9 +1,9 @@
 package create;
 
-
 public class old {
 
 	public void x() {
+		System.out.println(this);
 		System.out.println(getClass().getName());
 	}
 
@@ -21,5 +21,9 @@ public class old {
 
 	public void mba() {
 		System.err.println(getClass().getName());
+	}
+
+	public void a(int a) {
+		System.out.println(a);
 	}
 }

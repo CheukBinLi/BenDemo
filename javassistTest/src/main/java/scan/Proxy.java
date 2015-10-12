@@ -1,6 +1,8 @@
 package scan;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -10,14 +12,16 @@ import javassist.CtMethod;
 import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
+import create.n;
 import create.old;
 
 public class Proxy {
 
 	public static <T> T X() throws NotFoundException, CannotCompileException, InstantiationException, IllegalAccessException {
-
 		Class a = old.class;
 		ClassPool classPool = ClassPool.getDefault();
+		classPool.importPackage("create.n");
+		classPool.importPackage("java.lang.reflect.Method");
 		CtClass old = classPool.get(a.getName());
 		CtClass newClass = classPool.makeClass(a.getName() + "$Impl");
 		newClass.setSuperclass(old);//继承
@@ -44,15 +48,19 @@ public class Proxy {
 			else
 				tempM.setBody("{ return super." + tempM.getName() + "($$);}");
 			//				CtNewMethod.make(src, declaring, delegateObj, delegateMethod)
-			//			if (m.getName().equals("x"))
-			tempM.setBody("{$proceed($$)}", "this", "mba()");
+			if (m.getName().equals("x")) {
+				//tempM.setBody("{$proceed($$)}", "this", "mba()");
+				//tempM.setBody("{$proceed($$);}", "this", "mba");
+				tempM.setBody("{n nn = new n();" + "Method a = n.class.getDeclaredMethod(\"a\", new Class[] { Integer.TYPE });" + "a.invoke(nn, new Object[] { Integer.valueOf(1) });}");
+			}
 			newClass.addMethod(tempM);
 		}
 		try {
-			newClass.writeFile("C:/Users/hnbh/Desktop/1.class");
+			newClass.writeFile("D:/Desktop");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 		return (T) newClass.toClass().newInstance();
 	}
 
@@ -60,5 +68,22 @@ public class Proxy {
 		old o = X();
 		o.x();
 		System.out.println(o.x2(10));
+		try {
+			n nn = new n();
+			Method a = n.class.getDeclaredMethod("a", int.class);
+			a.invoke(nn, 1);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(Thread.currentThread().getContextClassLoader().getResource(""));
 	}
 }
