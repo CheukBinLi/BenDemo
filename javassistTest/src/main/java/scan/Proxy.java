@@ -8,6 +8,7 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtConstructor;
+import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
@@ -51,10 +52,15 @@ public class Proxy {
 			if (m.getName().equals("x")) {
 				//tempM.setBody("{$proceed($$)}", "this", "mba()");
 				//tempM.setBody("{$proceed($$);}", "this", "mba");
-				tempM.setBody("{n nn = new n();" + "Method a = n.class.getDeclaredMethod(\"a\", new Class[] { Integer.TYPE });" + "a.invoke(nn, new Object[] { Integer.valueOf(1) });}");
+				//				tempM.setBody("{n nn = new n();" + "Method a = n.class.getDeclaredMethod(\"a\", new Class[] { Integer.TYPE });" + "a.invoke(nn, new Object[] { Integer.valueOf(1) });}");
+				tempM.setBody("{Method a = n.class.getDeclaredMethod(\"axx\", new Class[] { Integer.TYPE });}");
 			}
 			newClass.addMethod(tempM);
 		}
+		CtField[] ctFields = old.getDeclaredFields();
+		for (CtField f : ctFields)
+			System.out.println(f.getFieldInfo().getConstantValue());
+
 		try {
 			newClass.writeFile("D:/Desktop");
 		} catch (IOException e) {
@@ -66,7 +72,8 @@ public class Proxy {
 
 	public static void main(String[] args) throws InstantiationException, IllegalAccessException, NotFoundException, CannotCompileException {
 		old o = X();
-		o.x();
+		//		o.x();
+		System.out.println(o.getFX());
 		System.out.println(o.x2(10));
 		try {
 			n nn = new n();

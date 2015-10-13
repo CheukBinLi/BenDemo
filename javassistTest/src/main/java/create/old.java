@@ -2,6 +2,8 @@ package create;
 
 public class old {
 
+	private String FX = "FxField";
+
 	public void x() {
 		System.out.println(this);
 		System.out.println(getClass().getName());
@@ -26,4 +28,13 @@ public class old {
 	public void a(int a) {
 		System.out.println(a);
 	}
+
+	public String getFX() {
+		return FX;
+	}
+
+	public void setFX(String fX) {
+		FX = fX;
+	}
+
 }
