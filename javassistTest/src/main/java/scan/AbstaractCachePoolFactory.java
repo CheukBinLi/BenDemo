@@ -53,8 +53,7 @@ public abstract class AbstaractCachePoolFactory implements CachePoolFactory {
 		if (null == obj) {
 			temp = new ArrayList<Object>();
 			getCache().put(key, temp);
-		}
-		else
+		} else
 			temp = (List<Object>) obj;
 		obj = null;
 		List<Object> X = null;
@@ -66,14 +65,23 @@ public abstract class AbstaractCachePoolFactory implements CachePoolFactory {
 				obj = temp.get(floor[i]);
 				if (null == obj) {
 					temp.set(floor[i], obj = new ArrayList<Object>());
-					temp = (List<Object>) obj;
-				}
-				else {
-					temp = (List<Object>) obj;
 				}
 				path.add(floor[i]);
+				temp = (List<Object>) obj;
 			}
 			//大于
+			else {
+				temp.add(obj = new ArrayList<Object>());
+				path.add(temp.size() - 1);
+				temp = (List<Object>) obj;
+			}
+		}
+		if (floor[size - 1] < temp.size()) {
+			temp.set(floor[size - 1], value);
+			path.add(floor[size - 1]);
+		} else {
+			temp.add(value);
+			path.add(temp.size() - 1);
 		}
 		return path.toArray(new Integer[0]);
 	}
@@ -89,10 +97,12 @@ public abstract class AbstaractCachePoolFactory implements CachePoolFactory {
 		Integer[] A1 = a.addNFloor("学校分级", "野鸡小学", 1);
 		Integer[] A2 = a.addNFloor("学校分级", "野鸡小学1-1班", 1, 1);
 		Integer[] A3 = a.addNFloor("学校分级", "野鸡小学1-2班", 1, 1);
+		Integer[] A33 = a.addNFloor("学校分级", "野鸡小学1-3班", 1, 1);
 		Integer[] A4 = a.addNFloor("学校分级", "野鸡小学2", 2);
 		System.out.println(a.getNFloor("学校分级", A1));
 		System.out.println(a.getNFloor("学校分级", A2));
 		System.out.println(a.getNFloor("学校分级", A3));
+		System.out.println(a.getNFloor("学校分级", A33));
 		System.out.println(a.getNFloor("学校分级", A4));
 		Object o = a.get("学校分级");
 		System.out.println(a.get("学校分级"));
