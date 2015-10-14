@@ -50,8 +50,6 @@ public class JavassistProxyFactory {
 		//CtField handlerInterfaceCtField = CtField.make("private JavassistProxy.HI handler=" + handler.getName() + ";", newCtClass);
 		StringBuffer params = new StringBuffer();
 		for (CtMethod m : newCtClass.getDeclaredMethods()) {
-			System.err.println(java.lang.reflect.Modifier.toString(m.getModifiers()));
-			System.out.println(m.toString());
 			params.setLength(0);
 			Object o = m.getParameterTypes();
 			for (CtClass c : m.getParameterTypes())

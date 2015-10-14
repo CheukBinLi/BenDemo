@@ -1,5 +1,8 @@
 package create;
 
+import com.ben.ScanToPackage.annotation.Register;
+
+@Register
 public class old {
 
 	private String FX = "FxField";

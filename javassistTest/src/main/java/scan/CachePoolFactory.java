@@ -6,6 +6,8 @@ public interface CachePoolFactory {
 
 	public <T> T get(Object o);
 
+	public <T> T get4Map(Object... o);
+
 	/***
 	 * 慎用
 	 * @param value
@@ -22,6 +24,8 @@ public interface CachePoolFactory {
 	public Object put(Object o, Object value);
 
 	public Object putList(Object o, Object... values);
+
+	public void addNFloop4Map(Object value, Object... key);
 
 	/***
 	 * 
